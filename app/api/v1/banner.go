@@ -1,10 +1,9 @@
 package v1
 
 import (
-	"blog-api/app/models"
-	"blog-api/app/utils"
-	"blog-api/pkg/e"
-	"blog-api/pkg/util"
+	"go-gin-template/app/models"
+	"go-gin-template/pkg/e"
+	"go-gin-template/pkg/utils"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
@@ -54,7 +53,7 @@ func GetBanners(c *gin.Context){
 
 	code := e.SUCCESS
 
-	pagingAttri := util.GetPageVar(c)
+	pagingAttri := utils.GetPageVar(c)
 
 	data["lists"],_ = models.GetBanners(pagingAttri, maps)
 	data["total"],_ = models.GetBannerTotal(maps)
@@ -142,6 +141,13 @@ func UpdateBanner(c *gin.Context){
 			"msg":"没有找到该条记录",
 		})
 		return
+	}
+	if data.Url != "" {
+		if urlResult,err := utils.MoveFileToS(data.Url);err != nil{
+			log.Printf("文件删除失败,id:%s",err.Error())
+		} else{
+			data.Url = urlResult
+		}
 	}
 	if err :=models.UpdateBanner(id,data);err != nil{
 		c.JSON(http.StatusBadRequest,gin.H{

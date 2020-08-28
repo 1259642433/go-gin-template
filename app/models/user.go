@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+
 type User struct {
 	Model
 	Account     string    `json:"account"`

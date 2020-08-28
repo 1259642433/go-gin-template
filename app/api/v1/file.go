@@ -1,8 +1,8 @@
 package v1
 
 import (
+	"go-gin-template/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"blog-api/app/utils"
 	"net/http"
 	"path"
 )

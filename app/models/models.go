@@ -1,7 +1,7 @@
 package models
 
 import (
-	setting "blog-api/pkg/setting"
+	setting "go-gin-template/pkg/setting"
 	"fmt"
 	"log"
 

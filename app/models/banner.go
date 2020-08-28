@@ -1,8 +1,7 @@
 package models
 
 import (
-	"blog-api/app/utils"
-	"blog-api/pkg/util"
+	"go-gin-template/pkg/utils"
 	"log"
 )
 
@@ -15,7 +14,7 @@ type Banner struct {
 }
 
 //获取多个banner
-func GetBanners(pageVar util.PageVar, maps interface {})(data []Banner,err error){
+func GetBanners(pageVar utils.PageVar, maps interface {})(data []Banner,err error){
 	err = db.Where(maps).Offset(pageVar.Page).Limit(pageVar.Size).Find(&data).Error
 	return
 }
@@ -52,13 +51,6 @@ func CreateBanner(data Banner)(err error){
 
 //修改指定banner数据
 func UpdateBanner(id int,data Banner)(err error){
-	if data.Url != "" {
-		if urlResult,err := utils.MoveFileToS(data.Url);err != nil{
-			log.Printf("文件删除失败,id:%s",err.Error())
-		} else{
-			data.Url = urlResult
-		}
-	}
 	err = db.Model(&Banner{}).Where("id=?",id).Updates(&data).Error
 	return
 }

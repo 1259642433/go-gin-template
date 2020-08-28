@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blog-api/app/router"
+	"go-gin-template/app/router"
 )
 
 func main() {

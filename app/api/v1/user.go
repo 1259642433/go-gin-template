@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"blog-api/app/middlewares"
-	"blog-api/app/models"
-	"blog-api/app/utils"
+	"go-gin-template/app/middlewares"
+	"go-gin-template/app/models"
+	"go-gin-template/pkg/utils"
 	"net/http"
 	"time"
 
@@ -36,10 +36,10 @@ func Login(c *gin.Context){  //登陆
 					NotBefore: int64(time.Now().Unix() - 60),
 					ExpiresAt: int64(time.Now().Add(t).Unix()),
 					IssuedAt: int64(time.Now().Unix()),
-					Issuer:    "U.amazing",
+					Issuer: "U.amazing",
 				},
 			}
-			jwt := middlewares.NewJWT()
+			jwt := middlewares.NewJWT();
 			token,err := jwt.CreateToken(claims);
 			if err!=nil{
 				c.JSON(http.StatusOK,gin.H{

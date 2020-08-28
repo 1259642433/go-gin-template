@@ -1,9 +1,9 @@
 package router
 
 import (
-	"blog-api/app/api/v1"
-	"blog-api/app/middlewares"
-	"blog-api/pkg/setting"
+	v1 "go-gin-template/app/api/v1"
+	"go-gin-template/app/middlewares"
+	"go-gin-template/pkg/setting"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -14,15 +14,20 @@ import (
 func InitRouter() {
 	router := gin.Default()
 	// 要在路由组之前全局使用「跨域中间件」, 否则会返回404
-
+	router.Use(middlewares.Cors())
 	//注意 Recover 要尽量放在第一个被加载
 	//如不是的话，在recover前的中间件或路由，将不能被拦截到
 	//程序的原理是：
 	//1.请求进来，执行recover
 	//2.程序异常，抛出panic
 	//3.panic被 recover捕获，返回异常信息，并Abort,终止这次请求
-	//router.Use(middlewares.Recover)
-	router.Use(middlewares.Cors())
+	//gin.default()创建路由时其实已经默认调用Logger,Recovery这两个中间件了
+	//router.Use(gin.Logger(),gin.Recovery())
+
+	// token鉴权
+	//router.Use(middlewares.Auth())
+
+	gin.SetMode(setting.RunMode)
 
 	// var jwt = middlewares.Auth()
 	base := router.Group("/app/v1")

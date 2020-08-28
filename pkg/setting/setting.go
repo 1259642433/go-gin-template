@@ -23,7 +23,7 @@ var (
 func init() {
 	var err error
 	//dir,_ := os.Getwd()
-	Cfg, err = ini.Load("D:\\workspace\\Go\\project\\blog-api\\config\\app.ini")
+	Cfg, err = ini.Load("D:\\workspace\\Go\\project\\go-gin-template\\config\\app.ini")
 	if err != nil {
 		log.Fatalf("Fail to parse 'conf/app.ini': %v", err)
 	}
