@@ -1,12 +1,9 @@
 package main
 
-import (
-	"go-gin-template/app/router"
-)
+// 引入route，默认执行其中init函数挂载路由
+import _ "go-gin-template/router"
 
 func main() {
-	//挂载路由
-	router.InitRouter()
 
 	//todo 对接nsq
 	//middlewares.Consumer()
