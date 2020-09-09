@@ -2,13 +2,14 @@ package v1
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego/validation"
-	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go-gin-template/models"
 	"go-gin-template/utils"
 	"go-gin-template/utils/e"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 //func Login(c *gin.Context){  //登陆
@@ -61,27 +62,29 @@ import (
 
 func Login(c *gin.Context) {
 	var code int
-	var bodyData map[string] string
-	data := make(map[string] interface{})
+	var bodyData map[string]string
+	data := make(map[string]interface{})
 
-	body,_ := c.GetRawData()
+	body, _ := c.GetRawData()
 
-	if err := json.Unmarshal(body,&bodyData);err != nil{
+	if err := json.Unmarshal(body, &bodyData); err != nil {
 		code = e.ERROR_UNKNOW
 	}
 
-	valid := validation.Validation{}
 	a := models.User{Username: bodyData["username"], Password: bodyData["password"]}
-	ok, _ := valid.Valid(&a)
+	var validate *validator.Validate
+	validate = validator.New()
+	err := validate.Struct(&a)
+	log.Printf("%+v",&a)
+	log.Println(err)
 
-
-	if ok {
+	if err == nil {
 		var user models.User
 		var err error
-		if user,err = models.CheckUser(bodyData["username"], bodyData["password"]);err != nil{
+		if user, err = models.CheckUser(bodyData["username"], bodyData["password"]); err != nil {
 			code = e.ERROR_AUTH
-		}else {
-			log.Printf("user:%+v",user)
+		} else {
+			log.Printf("user:%+v", user)
 			//if(){
 			//	token, err := utils.GenerateToken(username, password)
 			//	if err != nil {
@@ -96,24 +99,24 @@ func Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" :  e.GetMsg(code),
-		"data" : data,
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": data,
 	})
 }
 
-func UpdateUser(c *gin.Context){
+func UpdateUser(c *gin.Context) {
 	var data models.User
-	if err :=c.BindJSON(&data);err != nil{
-		c.JSON(http.StatusBadRequest,gin.H{
-			"msg":"绑定出错",
-			"err":err.Error(),
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "绑定出错",
+			"err": err.Error(),
 		})
 		return
 	}
 	if data.ID == 0 {
-		c.JSON(http.StatusBadRequest,gin.H{
-			"msg":"id不能为空",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "id不能为空",
 		})
 		return
 	}
@@ -130,44 +133,44 @@ func UpdateUser(c *gin.Context){
 	//	return
 	//}
 	if data.Avater != "" {
-		if urlResult,err := utils.MoveFileToS(data.Avater);err != nil{
-			c.JSON(http.StatusBadRequest,gin.H{
-				"msg":"文件移动出错",
-				"err":err.Error(),
+		if urlResult, err := utils.MoveFileToS(data.Avater); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"msg": "文件移动出错",
+				"err": err.Error(),
 			})
-		} else{
+		} else {
 			data.Avater = urlResult
 		}
 	}
-	if err := models.UpdateUser(data);err != nil{
-		c.JSON(http.StatusBadRequest,gin.H{
+	if err := models.UpdateUser(data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": "更新出错",
 			"err": err.Error(),
 		})
 	} else {
-		c.JSON(http.StatusOK,gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"msg": "更新成功",
 		})
 	}
 }
 
-func Verify(c *gin.Context){ //token验证登陆,同时返回user信息
+func Verify(c *gin.Context) { //token验证登陆,同时返回user信息
 	token := c.Request.Header.Get("token")
-	claims,err := utils.ParseToken(token)
+	claims, err := utils.ParseToken(token)
 	if err != nil {
-		c.JSON(401,gin.H{
+		c.JSON(401, gin.H{
 			"msg": "验证失败",
 		})
 	}
-	user,err := models.CheckUser(claims.Username,claims.Password)
+	user, err := models.CheckUser(claims.Username, claims.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": "查询出错",
-			"err":err.Error(),
+			"err": err.Error(),
 		})
 	}
-	c.JSON(http.StatusOK,gin.H{
-		"msg": "验证通过",
+	c.JSON(http.StatusOK, gin.H{
+		"msg":      "验证通过",
 		"userInfo": user,
 	})
 }

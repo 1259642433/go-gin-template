@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	Model
-	Username     string    `json:"username"`
-	Password    string    `json:"password"`
-	Name        string    `json:"name"`
+	Username    string    `validate:"required";json:"username"`
+	Password    string    `validate:"required";json:"password"`
+	Name        string    `validate:"required";json:"name"`
 	Avater      string    `json:"avater"`
 	Phone       string    `json:"phone"`
 	Email       string    `json:"email"`
